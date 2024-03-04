@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+
+    <record id="stock_picking_inherit_view_tree" model="ir.ui.view">
+        <field name="name">stock.picking.inherit.view.tree</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="volume"/> 
+            </xpath> 
+        </field>
+    </record>
+    
+    <record id="inventory_view_graph" model="ir.ui.view">
+        <field name="name">inventory.view.graph</field>
+        <field name="model">stock.picking.batch</field>
+        <field name="arch" type="xml">
+            <graph string="Inventory Batch Graph" type="bar" stacked="True">
+                    <field name="scheduled_date" interval="day"/>
+                    <field name="vehicle_category"/>
+            </graph>
+        </field>
+    </record>
+    
+    <record id="inventory_view_form" model="ir.ui.view">
+        <field name="name">inventory.view.form.inherit</field>
+        <field name="model">stock.picking.batch</field>
+        <field name="inherit_id" ref="stock_picking_batch.stock_picking_batch_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='scheduled_date']" position="after">
+                <field name="dock_id" placeholder="Dock A"/>
+                <field name="vehicle" placeholder="Opel GJ45XC1234"/>
+                <field name="vehicle_category" placeholder="Semi Truck"/>
+                <field name="weight" widget="progressbar" />
+                <field name="volume" widget="progressbar" /> 
+            </xpath> 
+        </field>
+    </record>
+
+    <record id="inventory_view_gantt" model="ir.ui.view">
+        <field name="name">inventory.view.gantt</field>
+        <field name="model">stock.picking.batch</field>
+        <field name="arch" type="xml">
+            <gantt 
+            string="Batch Picking" 
+            date_start="create_date" 
+            date_stop="scheduled_date" 
+            default_group_by="dock_id,vehicle" 
+            default_scale="week" 
+            color="vehicle"
+            decoration-info="state == 'draft'" 
+            >
+            <field name = "state"/>
+            </gantt>
+        </field>
+    </record>
+    
+    <record id="stock_picking_batch_graph_action" model="ir.actions.act_window.view">
+        <field name="act_window_id" ref="stock_picking_batch.stock_picking_batch_action"/>
+        <field name="view_mode">graph</field>
+        <field name="view_id" ref="inventory_view_graph"/>
+    </record>
+    <record id="stock_picking_batch_gantt_action" model="ir.actions.act_window.view">
+        <field name="act_window_id" ref="stock_picking_batch.stock_picking_batch_action"/>
+        <field name="view_mode">gantt</field>
+        <field name="view_id" ref="inventory_view_gantt"/>
+    </record>
+</odoo>
